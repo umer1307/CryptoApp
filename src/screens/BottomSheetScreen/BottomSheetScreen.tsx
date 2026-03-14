@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   uparrow: {
     width: wp('3%'),
     height: hp('1.5%'),
-    marginLeft: 8,
-    marginTop: 5,
+    // marginLeft: 8,
+    // marginTop: 5,
   },
 });

@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
   bottomButton: {
     borderColor: Colors.downArrow,
     borderWidth: 1,
-    paddingHorizontal: 135,
-    paddingVertical: 12,
+    paddingHorizontal: 130,
+    paddingVertical: 10,
     borderRadius: 30,
     flexDirection: 'row',
   },

@@ -1,0 +1,82 @@
+import React from 'react';
+import { View, Text, Image, StyleSheet} from 'react-native';
+
+import { Colors } from '../theme/colors';
+
+type Props = {
+  logo: any
+  name: string
+  short: string
+  price: number
+  availableAmount: number
+}
+
+const AssetInfoBox = ({ logo, name, short, price, availableAmount }: Props) => {
+  return (
+    <View style={styles.ethBox}>
+      <View style={styles.ethBoxInner}>
+        <Image source={logo} style={styles.ethIcon} />
+        <View style={styles.nameBlock}>
+          <Text style={styles.ethSymbol}>{name}</Text>
+          <Text style={styles.ethShort}>{short}</Text>
+        </View>
+        <View style={styles.priceBlock}>
+          <Text style={styles.price}>${price.toLocaleString()}</Text>
+          <Text style={styles.ethBalance}>{availableAmount.toFixed(5)} {short}</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default AssetInfoBox;
+
+const styles = StyleSheet.create({
+  ethBox: {
+    height: 70,
+    backgroundColor: Colors.background1,
+    borderRadius: 15,
+    padding: 16,
+    marginBottom: 16,
+    borderTopWidth: 1.5,
+    borderRightWidth: 0.5,
+    borderLeftWidth: 0.5,
+    borderColor: Colors.fieldBorder
+  },
+  ethBoxInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  nameBlock: {
+    marginLeft: 10
+  },
+  ethIcon: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  ethSymbol: {
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  ethShort: {
+    color: Colors.lightblue,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  priceBlock: {
+    alignItems: 'flex-end',
+    flex: 1,
+  },
+  price: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  ethBalance: {
+    color: Colors.lightblue,
+    fontSize: 12,
+    marginTop: 2,
+  },
+});

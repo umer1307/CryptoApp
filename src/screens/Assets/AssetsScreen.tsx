@@ -1,0 +1,347 @@
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity,ScrollView,Image, Animated,  } from 'react-native';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+
+import { Images } from '../../assets';
+import AllAssetsList from '../../components/AllAssetsList';
+import BottomSheetNetwork from '../../components/BottomSheetNetwork';
+import CoinbaseCard from '../../components/CoinbaseCard';
+import CryptoChart from '../../components/CryptoChart';
+import { HeaderNav } from '../../components/HeaderNav';
+import NFTCard from '../../components/NFTCard';
+import SecondaryButton from '../../components/SecondaryButton';
+import { TokenActionButtons } from '../../components/TokenActionButtons';
+import TopAssetsCard from '../../components/TopAssetsCard';
+import TransactionButton from '../../components/TransactionButton';
+import TransactionCard from '../../components/TransactionCard';
+import nftImages from '../../mock/NftImages';
+import {transactionData} from '../../mock/nftRecentData'
+import { AppNavigatorParamList } from '../../navigators/routeNames'
+import { Colors } from '../../theme/colors';
+
+const initialLayout = { width: Dimensions.get('window').width };
+
+const CryptoTab = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<AppNavigatorParamList>>();
+const [showSheet, setShowSheet] = useState(false);
+
+  return (
+    <View style={{ flex: 1 ,}}>  
+    
+      <ScrollView
+        contentContainerStyle={{
+          paddingHorizontal: 8,
+          paddingTop: 20,
+          paddingBottom: 40, 
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <CryptoChart />
+        <View style={styles.divider} />
+        <TokenActionButtons />
+
+        <View style={{ marginTop: 20, alignItems: 'center' }}>
+          <TopAssetsCard />
+        </View>
+
+        <View style={styles.popularHeader}>
+          <Text style={styles.sectionTitle}>Popular</Text>
+            <TouchableOpacity onPress={() => setShowSheet(true)}>
+            <View style={styles.popularIcons}>
+            <Image source={Images.profileHeadLogo} style={styles.popularIcon} />
+            <Image source={Images.down} style={[styles.popularIcon, { marginLeft: 4 }]} />
+            </View>
+            </TouchableOpacity>
+        </View>
+
+        <View style={styles.popularDivider} />
+        <AllAssetsList />
+        <TouchableOpacity
+          style={styles.viewAllButton}
+          onPress={() => navigation.navigate('Supported')}
+        >
+          <Text style={styles.viewAllText}>View All</Text>
+        </TouchableOpacity>
+        <View style={{marginTop:35,marginBottom:35}}>
+        <CoinbaseCard />
+        </View>
+        <View style={{ marginTop: 10, marginBottom: 40 }}>
+          <SecondaryButton label="View Spam" onPress={() => navigation.navigate('Spam', { defaultTab: 'Crypto' })} />
+        </View>
+      </ScrollView>
+
+     
+      <View style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+        <BottomSheetNetwork visible={showSheet} onClose={() => setShowSheet(false)} />
+      </View>
+    </View>
+  );
+};
+
+const NFTsTab = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<AppNavigatorParamList>>();
+
+const screenWidth = Dimensions.get("window").width;
+const ITEM_MARGIN = 4;
+const NUM_COLUMNS = 2;
+const ITEM_WIDTH = (screenWidth - ITEM_MARGIN * (NUM_COLUMNS + 1)) / NUM_COLUMNS;
+
+
+  return (
+    <ScrollView style={{ flex: 1, backgroundColor: '#01032C' }} contentContainerStyle={{ padding: 14 }}> 
+      <Text style={styles.myNFTsText}>My NFTs</Text>
+
+      <View style={styles.nftGrid}>
+       <FlatList
+        data={nftImages}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) =>(
+           <NFTCard image={item.image} style={{ width: ITEM_WIDTH }}
+           />
+  )}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        columnWrapperStyle={{ justifyContent: 'space-between' }}
+        scrollEnabled={false}
+          />
+
+      </View>
+
+      <View style={{ marginTop: 20,  }}>
+        <SecondaryButton label="View Spam" onPress={() => navigation.navigate('Spam', { defaultTab: 'NFTs' })} />
+      </View>
+
+      <View style={{ height: 28, marginTop:20 }}>
+        <Text style={styles.recentTransactions}>Recent Transactions</Text>
+      </View>
+    <View style={styles.popularDivider} />
+    <View style={{ borderRadius: 12 }}>
+      <FlatList
+       data={transactionData}
+       renderItem={({ item }) => <TransactionCard item={item} />}
+        keyExtractor={(item) => item.id}
+        scrollEnabled={false}
+        />
+    </View>
+    <View style={styles.bottomSpace} >
+  <TransactionButton  />
+    </View>
+  
+  </ScrollView>
+  );
+};
+
+
+
+const EarnTab = () => (
+  <View style={styles.placeholderContainer}>
+    <Text style={styles.placeholder}>Earn data here</Text>
+  </View>
+);
+
+const AssetsScreen = () => {
+
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'crypto', title: 'Crypto'},
+    { key: 'nfts', title: 'NFTs' },
+    { key: 'earn', title: 'Earn' },
+  ]);
+
+  const renderScene = SceneMap({
+    crypto: CryptoTab,
+    nfts: NFTsTab,
+    earn: EarnTab,
+  });
+
+  return (
+    <View style={{ flex: 1, backgroundColor: index === 1 ? '#01032C' : '#01021D' }}>
+      <HeaderNav />
+ 
+<TabView
+  navigationState={{ index, routes }}
+  renderScene={renderScene}
+  onIndexChange={setIndex}
+  initialLayout={initialLayout}
+  renderTabBar={(props) => (
+    <TabBar
+      {...props}
+      renderIndicator={(indicatorProps) => {
+        const { position, navigationState, getTabWidth } = indicatorProps;
+        const inputRange = navigationState.routes.map((_, i) => i);
+
+        const translateX = position.interpolate({
+          inputRange,
+          outputRange: inputRange.map((i) => {
+            const tabWidth = getTabWidth ? getTabWidth(i) : initialLayout.width / navigationState.routes.length;
+            const textWidth = navigationState.routes[i].title.length * 9;
+            return (tabWidth - textWidth) / 2 + i * tabWidth ;
+          }),
+        });
+
+        return (
+          <Animated.View
+            style={{
+              position: 'absolute',
+              height: 2,
+              backgroundColor: '#7AB7FD',
+              bottom: 0,
+              width: navigationState.routes[index].title.length * 8 + 8, 
+              transform: [{ translateX }],
+            }}
+          />
+        );
+      }}
+      style={{
+        backgroundColor: index === 1 ? '#01032C' : '#01021D',
+         borderBottomWidth: 2,
+        borderBottomColor: '#030A74',
+        height:45, 
+      }}
+     
+      activeColor="white"
+      inactiveColor="#7AB7FD"
+      
+      
+
+    />
+  )}
+/>
+    </View>
+  );
+};
+
+export default AssetsScreen;
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.backgroundAlt,
+    paddingHorizontal: 5,
+   
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1E2D56',
+  },
+  tabButton: {
+    alignItems: 'center',
+    paddingBottom: 8,
+  },
+  tabText: {
+    color: '#7AB7FD',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  activeTabText: {
+    color: 'white',
+  },
+  underline: {
+    width: 30,
+    height: 2,
+    backgroundColor: 'white',
+    marginTop: 4,
+    borderRadius: 1,
+  },
+  
+  sectionTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+ 
+  placeholder: {
+    color: '#777',
+    textAlign: 'center',
+    marginTop: 100,
+  },
+  placeholderContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 20,
+},
+popularDivider: {
+  height: 1,
+  backgroundColor: '#080C4C',
+  marginVertical: 8,
+},
+
+viewAllButton: {
+  marginTop: 30,
+  alignSelf: 'center',
+  width: '90%',
+  paddingVertical: 12,
+  borderRadius: 99,
+  borderWidth: 1,
+  borderColor: '#4898F3',
+  backgroundColor: 'transparent',
+},
+
+viewAllText: {
+  color: 'white',
+  fontWeight: '600',
+  textAlign: 'center',
+  fontSize: 16,
+},
+popularHeader: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'flex-end',
+  marginTop: 20,
+  marginBottom: 10,
+  marginLeft:12,
+},
+
+popularIcons: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+popularIcon: {
+  width: 35,
+  height: 25,
+  resizeMode: 'contain',
+},
+  divider: {
+    height: 1,
+    backgroundColor: '#10178A',
+    marginHorizontal:22,
+  },
+  myNFTsText: {
+  color: '#fff',
+  fontSize: 19,
+  fontWeight: '600',
+  marginTop: 20,
+  marginBottom: 5,
+  left:5,
+},
+
+nftGrid: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+},
+
+recentTransactions: {
+  color: 'white',
+  fontSize: 15,
+  fontWeight: 'bold',
+
+},
+bottomSpace:{
+  marginBottom:60,
+},
+  tabLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+
+});

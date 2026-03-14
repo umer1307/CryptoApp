@@ -1,0 +1,75 @@
+import React from 'react';
+import { View, TextInput, Image, StyleSheet, TouchableOpacity } from 'react-native';
+
+import { Images } from '../assets';
+
+interface SearchBoxProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  onQrPress?: () => void;
+  onClear?: () => void;
+}
+const SearchBox = ({
+  value,
+  onChangeText,
+  placeholder = "Search",
+  onQrPress,
+  onClear,
+}: SearchBoxProps) => {
+  const showClearIcon = value.length > 0;
+
+  return (
+    <View style={styles.searchContainer}>
+      <Image source={Images.search} style={styles.searchIcon} />
+      <TextInput
+        placeholder={placeholder}
+        placeholderTextColor="#ADD2FD"
+        style={styles.searchInput}
+        value={value}
+        onChangeText={onChangeText}
+      />
+        {showClearIcon ? (
+        <TouchableOpacity onPress={onClear}>
+          <Image source={Images.cross} style={styles.rightIcon} />
+        </TouchableOpacity>
+      ) : onQrPress ? (
+        <TouchableOpacity onPress={onQrPress}>
+          <Image source={Images.qr1} style={styles.rightIcon} />
+        </TouchableOpacity>
+      ) : null}
+    </View>
+  );
+};
+export default SearchBox;
+
+const styles = StyleSheet.create({
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#086DE1',
+    borderRadius: 99,
+    paddingHorizontal: 14, 
+    paddingVertical: 8,
+    marginBottom: 16,
+  },
+  searchIcon: {
+    width: 16,
+    height: 16,
+    marginRight: 10, 
+    resizeMode: 'contain',
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: '#ADD2FD',
+  },
+  rightIcon: {
+    width: 18,
+    height: 18,
+    marginLeft: 8,
+    resizeMode: 'contain',
+    right:4,
+  },
+});

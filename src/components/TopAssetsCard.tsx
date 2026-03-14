@@ -1,0 +1,184 @@
+import React from 'react';
+import { View, Text, StyleSheet, Image,TouchableOpacity } from 'react-native';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+
+import { Images } from '../assets';
+import { Colors } from '../theme/colors';
+
+type TopAssetsCardProps = {
+  showChange?: boolean;
+    onAssetPress?: (asset: Asset) => void;
+};
+type Asset = {
+  name: string;
+  short: string;
+  change: string;
+  price: string;
+  amount: string;
+  logo: any;
+  isPositive: boolean;
+};
+
+const assets:Asset [] = [
+  {
+    name: 'Ethereum',
+    short: 'ETH',
+    change: '1.92%',
+    price: '$2,047.62',
+    amount: '8.03',
+    logo: Images.ethereum,
+    isPositive: true,
+  },
+  {
+    name: 'Bitcoin',
+    short: 'BTC',
+    change: '2.10%',
+    price: '$15,751.87',
+    amount: '0.02845532',
+    logo: Images.bitCoin,
+    isPositive: false,
+  },
+  {
+    name: 'Solana',
+    short: 'SOL',
+    change: '1.93%',
+    price: '$209.30',
+    amount: '12.5',
+    logo: Images.sol,
+    isPositive: true,
+  },
+];
+
+const TopAssetsCard = ({ showChange = true ,onAssetPress }:TopAssetsCardProps) => {
+  return (
+    <View style={styles.card}>
+      {assets.map((item, index) => (
+        <View key={index}>
+         <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => onAssetPress?.(item)}
+          >
+          <View style={styles.row}>
+            <Image source={item.logo} style={styles.logo} />
+          <View style={styles.assetInfo}>
+            <View style={styles.assetNameRow}>
+              <Text style={styles.assetName}>{item.name}</Text>
+              {showChange && (
+                <View style={styles.changeContainer}>
+                  <Image
+                    source={item.isPositive ? Images.greenArrowUp : Images.redDown}
+                    style={styles.changeIcon}
+                  />
+                  <Text
+                    style={[
+                      styles.changeText,
+                      { color: item.isPositive ? Colors.graphGreen : Colors.red },
+                    ]}
+                  >
+                    {item.change}
+                  </Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.assetSymbol}>{item.short}</Text>
+          </View>
+            <View style={styles.priceBlock}>
+                  <Text style={styles.price}>{item.price}</Text>
+              <Text style={styles.amount}>{item.amount}</Text>
+            </View>
+         </View>
+         </TouchableOpacity>
+          {index !== assets.length - 1 && <View style={styles.divider} />}
+        </View>
+      ))}
+    </View>
+  );
+};
+export default TopAssetsCard;
+
+const styles = StyleSheet.create({
+  card: {
+    width: wp('90%'),
+    backgroundColor: Colors.background2,
+    borderRadius: 20,
+    borderTopWidth: 1,
+    borderColor: Colors.fieldBackground,
+    paddingHorizontal: 14,
+    paddingVertical: 10
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', 
+    paddingVertical: 12,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+    marginRight: 12,
+  },
+  assetInfo: {
+    width: 100, 
+  },
+  assetName: {
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  assetSymbol: {
+    color: Colors.activeTint,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  change: {
+    fontSize: 12,
+    fontWeight: '600',
+    width: 60,
+    textAlign: 'left',
+    marginRight: 10,
+    right:28,
+    bottom:8,
+  },
+  priceBlock: {
+    alignItems: 'flex-end',
+    flex: 1,
+  },
+  price: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign:'right'
+  },
+  amount: {
+    color: Colors.activeTint,
+    fontSize: 13,
+    marginBottom: 2,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.background,
+    marginLeft: 40,
+    width: 287,
+    marginVertical: 4,
+  },
+  assetNameRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+changeContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginLeft: 8, 
+},
+changeIcon: {
+  width: 11,
+  height: 11,
+  resizeMode: 'contain',
+  marginRight: 2,
+},
+changeText: {
+  fontSize: 12,
+  fontWeight: '600',
+},
+});

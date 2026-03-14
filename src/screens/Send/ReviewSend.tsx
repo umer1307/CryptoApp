@@ -1,0 +1,73 @@
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import React from 'react';
+import { StyleSheet, View} from 'react-native';
+
+import AssetsHeader from '../../components/AssetsHeader ';
+import AssetsTransferDetails from '../../components/AssetTransferDetails';
+import ProfileInfo from '../../components/ProfileInfo';
+import SwipeToSend from '../../components/SwipeToSend';
+import { AppNavigatorParamList } from '../../navigators/routeNames'
+import { useAppSelector } from '../../store/hooks'
+import { Colors } from '../../theme/colors';
+
+const ReviewSend = () => {
+   const { selectedAsset } = useAppSelector(state => state.selectedAsset)
+const note = useAppSelector(state => state.note.note);
+const amount = useAppSelector(state => state.amount.amount);
+
+
+   const navigation = useNavigation<NativeStackNavigationProp<AppNavigatorParamList>>()
+  return (
+    <View style={styles.container}>
+      <AssetsHeader title="Review Send" />
+      
+      <View style={styles.profile}>
+        <ProfileInfo />
+      </View>
+
+      <View>
+        {selectedAsset && (
+      <AssetsTransferDetails
+       logo={selectedAsset.logo}
+      name={selectedAsset.name}
+      short={selectedAsset.short}
+      price={parseFloat(selectedAsset.price)}
+      amount={parseFloat(amount)}  
+      note={note}
+      />
+      )}
+      </View>
+     <View style={styles.footer}>
+     <SwipeToSend
+      placeholder="Swipe to Send"
+      onNavigate={() => {
+      navigation.navigate('TransactionStatus');
+      }}
+      />
+</View>
+
+    </View>
+  );
+};
+
+export default ReviewSend;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.backgroundAlt,
+
+  },
+  profile: {
+    marginTop: 10,
+    marginBottom:50,
+  },
+  footer:{
+    position:'absolute',
+    bottom:0,
+    left:0,
+    right:0
+  }
+ 
+});

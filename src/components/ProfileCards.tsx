@@ -1,0 +1,108 @@
+import Clipboard from '@react-native-clipboard/clipboard';
+import React from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import Toast from 'react-native-toast-message';
+
+import { Images } from '../assets/index';
+import { Colors } from '../theme/colors';
+
+interface Props {
+  icon: any;
+  title: string;
+  address: string; 
+  background: any;
+  copyValue?: string; 
+}
+
+const ProfileCard: React.FC<Props> = ({ icon, title, address, background, copyValue }) => {
+  const handleCopy = () => {
+    Clipboard.setString(copyValue || address);
+
+    Toast.show({
+      type: 'success',
+      text1: 'Copied',
+      text2: 'Address copied to clipboard!',
+      position: 'bottom',
+      visibilityTime: 1500,
+      autoHide: true,
+    });
+  };
+
+  return (
+    <View style={styles.card}>
+      <Image source={background} style={styles.bgImage} />
+      <View style={styles.overlay}>
+        <Image source={icon} style={styles.icon} />
+        <View style={styles.info}>
+          <Text style={styles.title}>{title}</Text>
+
+          <TouchableOpacity
+            style={styles.addressContainer}
+            activeOpacity={0.7}
+            onPress={handleCopy}
+          >
+            <Image source={Images.copy} style={styles.copyImg} />
+            <Text style={styles.address}>{address}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  card: {
+    height: 230,
+    width: 355,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: Colors.black,
+  },
+  bgImage: {
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: 'contain',
+  },
+  overlay: {
+    flex: 1,
+    padding: 20,
+  },
+  icon: {
+    width: 34,
+    height: 34,
+    marginBottom: 10,
+  },
+  info: {
+    flex: 1,
+    marginTop: 80,
+    justifyContent: 'space-between',
+  },
+  title: {
+    color: Colors.white,
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  addressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.addressBorder,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginBottom: 20,
+  },
+  copyImg: {
+    marginRight: 10,
+    width: 15,
+    height: 15,
+    resizeMode: 'cover',
+  },
+  address: {
+    color: Colors.white,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+});
+
+export default ProfileCard;
